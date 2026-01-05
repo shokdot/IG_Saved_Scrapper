@@ -116,10 +116,6 @@ This project is for educational and personal use only.
 
 **Make sure you comply with Instagram's Terms of Service and applicable laws when using this tool.**
 
-## License
-
-[MIT License](LICENSE) *(or specify your preferred license)*
-
 ## Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](../../issues).
