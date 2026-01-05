@@ -2,3 +2,6 @@
 /splited/
 
 *.json
+
+
+.DS_Store
