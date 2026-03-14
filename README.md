@@ -11,8 +11,8 @@ A Python script that parses Instagram media JSON data, extracts useful metadata,
   - Owner username and full name
   - Caption text and translation (if available)
 - Automatically downloads media files
-- Organizes each post into its own folder
-- Handles network errors gracefully
+- Organizes each post into its own folder (e.g., `media_1`, `media_2`)
+- Handles network errors gracefully and infer file extensions (`.jpg`, `.png`, `.mp4`, `.webp`)
 
 ## Project Structure
 ```text
@@ -28,6 +28,7 @@ A Python script that parses Instagram media JSON data, extracts useful metadata,
 │   │   ├── media_2.mp4
 │   │   └── info.txt
 │   └── ...
+├── requirements.txt     # Python dependencies
 └── README.md
 ```
 
@@ -37,15 +38,19 @@ A Python script that parses Instagram media JSON data, extracts useful metadata,
 - Internet connection
 
 ### Python Dependencies
+Install the required packages using the provided `requirements.txt`:
 ```bash
-pip install requests
+pip install -r requirements.txt
 ```
 
 *(Standard library modules used: `json`, `pathlib`, `urllib.parse`)*
 
 ## Input Format
 
-The script expects a file named `medias.json` containing a list of Instagram media objects.
+The script expects a file named `medias.json` in the same directory.
+The JSON structure can be either:
+1. A direct list of Instagram media objects.
+2. A dictionary containing an `"items"` list (e.g., exported by some Instagram data scrapers).
 
 **Supported `product_type` values:**
 - `feed`
@@ -53,41 +58,43 @@ The script expects a file named `medias.json` containing a list of Instagram med
 - `carousel_container`
 - `ad`
 
-### Example (simplified)
+### Example
 ```json
-[
-  {
-    "id": "123",
-    "product_type": "feed",
-    "code": "ABCxyz",
-    "owner": {
-      "username": "example_user",
-      "full_name": "Example Name"
-    },
-    "caption": {
-      "text": "Hello world",
-      "text_translation": null
-    },
-    "image_versions2": {
-      "candidates": [
-        { "url": "https://example.com/image.jpg" }
-      ]
+{
+  "items": [
+    {
+      "media": {
+        "id": "123",
+        "product_type": "feed",
+        "code": "ABCxyz",
+        "owner": {
+          "username": "example_user",
+          "full_name": "Example Name"
+        },
+        "caption": {
+          "text": "Hello world",
+          "text_translation": "Bonjour le monde"
+        },
+        "image_versions2": {
+          "candidates": [
+            { "url": "https://example.com/image.jpg" }
+          ]
+        }
+      }
     }
-  }
-]
+  ]
+}
 ```
 
 ## How It Works
 
-1. Loads and filters media from `medias.json`
-2. Detects media type:
-   - Image
-   - Video
-   - Carousel
-3. Extracts metadata
-4. Creates a folder for each post
-5. Downloads media files
-6. Saves post information in `info.txt`
+1. Loads and parses the media from `medias.json`.
+2. Filters by supported media `product_type`.
+3. Detects media type (Image, Video, or Carousel) and retrieves source URLs.
+4. Extracts metadata (ID, owner, caption, etc.).
+5. Creates an isolated folder for each post in the `medias/` directory.
+6. Downloads the media files with inferred extensions.
+7. Saves post information inside `info.txt`.
 
 ## Usage
 ```bash
@@ -102,13 +109,15 @@ id: 123
 product_type: feed
 Owner: example_user (Example Name)
 Caption: Hello world
+Caption translate: Bonjour le monde
 ```
 
 ## Notes
 
-- Carousel posts download multiple files (`media_1.jpg`, `media_2.mp4`, etc.)
-- File extensions are inferred from the media URL
-- If a media URL is missing or invalid, the script skips it safely
+- Carousel posts download multiple files (`media_1.jpg`, `media_2.mp4`, etc.).
+- File extensions are inferred from the media URL (`.jpg`, `.png`, `.mp4`, `.webp`).
+- If a media URL is missing or invalid, the script skips it safely and continues processing.
+- The script gracefully handles missing metadata fields (e.g., if a post has no caption).
 
 ## Disclaimer
 

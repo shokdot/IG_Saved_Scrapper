@@ -159,16 +159,29 @@ def download_single_file(url, dest_folder, index=None):
 
 def main():
     with open("medias.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
+        raw_data = json.load(f)
         
+    data = []
+    if isinstance(raw_data, dict) and "items" in raw_data:
+        for item in raw_data["items"]:
+            if isinstance(item, dict) and "media" in item:
+                data.append(item["media"])
+            else:
+                data.append(item)
+    elif isinstance(raw_data, list):
+        data = raw_data
+    else:
+        print("Unrecognized JSON structure. Expected a list or a dict with 'items'.")
+        return
 
     product_types = ('ad', 'feed', 'carousel_container', 'clips')
 
     for media in data:
-        if media['product_type'] in product_types:
+        product_type = media.get('product_type')
+        if product_type in product_types:
             process_resource(media)
         else:
-            print(f"Unknown product_type: {media['product_type']}")
+            print(f"Unknown product_type: {product_type}")
 
     
     medias_dir.mkdir(exist_ok=True)
