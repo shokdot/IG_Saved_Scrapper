@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import requests
+from download import download_json
 from urllib.parse import urlparse
 
 filtered_data = []
@@ -191,4 +192,8 @@ def main():
         download_media(filtered["src_url"], medias_dir / f"media_{i+1}")
 
 if __name__ == "__main__":
-    main()
+    try: 
+        download_json()
+        main()
+    except:
+        pass

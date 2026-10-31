@@ -1,6 +1,9 @@
 /medias/
 /splited/
 
+
+.env
+__pycache__
 *.json
 
 
